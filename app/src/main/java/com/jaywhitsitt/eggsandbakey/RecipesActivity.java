@@ -1,12 +1,15 @@
 package com.jaywhitsitt.eggsandbakey;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.GridView;
 
+import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
 import com.jaywhitsitt.eggsandbakey.data.Recipe;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 import com.jaywhitsitt.eggsandbakey.utils.NetworkUtils;
@@ -23,6 +26,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
     @BindView(R.id.gv_recipes)
     GridView mGridView;
     RecipesAdapter mAdapter;
+    AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,15 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
 
         mAdapter = new RecipesAdapter(this, this);
         mGridView.setAdapter(mAdapter);
+
+        mDb = AppDatabase.getInstance(this);
+        LiveData<List<Recipe>> recipes = mDb.recipeDao().getAll();
+        recipes.observe(this, new Observer<List<Recipe>>() {
+            @Override
+            public void onChanged(List<Recipe> recipes) {
+                mAdapter.setData(recipes);
+            }
+        });
 
         new RecipesFetchTask().execute();
     }
@@ -47,7 +60,15 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         @Override
         protected void onPostExecute(List<Recipe> recipes) {
             super.onPostExecute(recipes);
-            mAdapter.setData(recipes);
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mDb.recipeDao().deleteAll();
+                    mDb.recipeDao().insertAll(recipes);
+                }
+            });
+            thread.start();
         }
 
     }
@@ -57,7 +78,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         Recipe recipe = mAdapter.getItem(position);
 
         Intent intent = new Intent(this, StepListActivity.class);
-        intent.putExtra(StepListActivity.EXTRA_STEPS, (ArrayList<Step>) recipe.getSteps());
+        intent.putExtra(StepListActivity.EXTRA_STEPS, (ArrayList<Step>) recipe.steps);
         startActivity(intent);
     }
 }

@@ -37,10 +37,15 @@ dependencies {
 
     def butterKnifeVersion = "10.1.0"
     implementation "com.jakewharton:butterknife:$butterKnifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
-    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+
+    def room_version = "2.1.0" // 2.1.0 for latest stable version
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'

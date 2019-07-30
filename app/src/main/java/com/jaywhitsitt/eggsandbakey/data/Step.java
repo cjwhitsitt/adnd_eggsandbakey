@@ -1,32 +1,34 @@
 package com.jaywhitsitt.eggsandbakey.data;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 
+@Entity(primaryKeys = { "id", "recipeId" },
+        foreignKeys = @ForeignKey(
+                entity = Recipe.class,
+                parentColumns = "id",
+                childColumns = "recipeId"
+        ))
 public class Step implements Serializable {
 
-    private int id;
-    private String shortDescription;
-    private String description;
-//    private String videoUrl;
-//    private String thumbnailUrl;
+    public int id;
+    public int recipeId;
+    public String shortDescription;
+    public String description;
+    public String videoUrl;
+    public String thumbnailUrl;
 
-    public Step(int id, String shortDescription, String description, String videoUrl, String thumbnailUrl) {
+    public Step(int id, int recipeId, String shortDescription, String description, String videoUrl, String thumbnailUrl) {
         this.id = id;
+        this.recipeId = recipeId;
         this.shortDescription = shortDescription;
         this.description = description;
-//        this.videoUrl = videoUrl;
-//        this.thumbnailUrl = thumbnailUrl;
+        this.videoUrl = videoUrl;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }

@@ -49,7 +49,7 @@ public class RecipesAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return getItem(position).getId();
+        return getItem(position).id;
     }
 
     @Override
@@ -66,11 +66,11 @@ public class RecipesAdapter extends BaseAdapter {
         }
 
         TextView nameTextView = convertView.findViewById(R.id.tv_recipe_name);
-        nameTextView.setText(recipe.getName());
+        nameTextView.setText(recipe.name);
 
         ImageView imageView = convertView.findViewById(R.id.iv_recipe_card);
         try {
-            imageView.setImageURI(Uri.parse(recipe.getImageUrlString()));
+            imageView.setImageURI(Uri.parse(recipe.imageUrlString));
             imageView.setVisibility(View.VISIBLE);
         } catch (NullPointerException e) {
             imageView.setVisibility(View.GONE);

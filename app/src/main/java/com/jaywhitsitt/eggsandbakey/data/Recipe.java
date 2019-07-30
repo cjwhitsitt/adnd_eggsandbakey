@@ -1,44 +1,39 @@
 package com.jaywhitsitt.eggsandbakey.data;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+import androidx.room.Relation;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 public class Recipe implements Serializable {
 
-    private int id;
-    private String name;
+    @PrimaryKey
+    public int id;
+    public String name;
 //    private List<Ingredient> ingredients;
-    private List<Step> steps;
-    private int servings;
-    private String imageUrlString;
+    @Ignore
+    public List<Step> steps;
+    public int servings;
+    public String imageUrlString;
 
-    public Recipe(int id, String name, /* List<Ingredient> ingredients,*/ List<Step> steps, int servings, String imageUrlString) {
+    public Recipe(int id, String name, int servings, String imageUrlString) {
         this.id = id;
         this.name = name;
-//        this.ingredients = ingredients;
-        this.steps = steps;
         this.servings = servings;
         this.imageUrlString = imageUrlString;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<Step> getSteps() {
-        return steps;
-    }
-
-    public int getServings() {
-        return servings;
-    }
-
-    public String getImageUrlString() {
-        return imageUrlString;
+    public Recipe(int id, String name, /* List<Ingredient> ingredients,*/ List<Step> steps, int servings, String imageUrlString) {
+        new Recipe(id, name, servings, imageUrlString);
+//        this.ingredients = ingredients;
+        this.steps = steps;
     }
 
 }

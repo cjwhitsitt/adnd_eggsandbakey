@@ -53,7 +53,7 @@ public class StepDetailFragment extends Fragment {
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mStep.getShortDescription());
+                appBarLayout.setTitle(mStep.shortDescription);
             }
         }
     }
@@ -65,7 +65,7 @@ public class StepDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mStep != null) {
-            ((TextView) rootView.findViewById(R.id.step_detail)).setText(mStep.getDescription());
+            ((TextView) rootView.findViewById(R.id.step_detail)).setText(mStep.description);
         }
 
         return rootView;

@@ -39,11 +39,12 @@ public class RecipeUtils {
                     int id = obj.getInt(ID_KEY);
                     String name = obj.getString(NAME_KEY);
 //                    JSONArray ingredientsArray = obj.getJSONArray(INGREDIENTS_KEY);
-                    List<Step> steps = getStepsFromJsonObject(obj.getJSONArray(STEPS_KEY));
+                    List<Step> steps = getStepsFromJsonObject(obj.getJSONArray(STEPS_KEY), id);
                     int servings = obj.getInt(SERVINGS_KEY);
 //                    String imageUrl = obj.getString(IMAGE_KEY); // Always empty - can't support until valid data given
 
-                    recipes.add(new Recipe(id, name, steps, servings, null));
+                    recipes.add(new Recipe(id, name, servings, null));
+
 
                 } catch (JSONException e) {
                     Log.e(TAG, "Error parsing recipe " + i);
@@ -57,7 +58,7 @@ public class RecipeUtils {
         return recipes;
     }
 
-    private static List<Step> getStepsFromJsonObject(JSONArray array) {
+    private static List<Step> getStepsFromJsonObject(JSONArray array, int recipeId) {
         List<Step> steps = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             try {
@@ -67,7 +68,7 @@ public class RecipeUtils {
                 String description = obj.getString(DESC_KEY);
                 String videoUrl = obj.getString(VIDEO_URL_KEY);
                 String thumbnailUrl = obj.getString(THUMBNAIL_URL_KEY);
-                steps.add(new Step(id, shortDescription, description, videoUrl, thumbnailUrl));
+                steps.add(new Step(id, recipeId, shortDescription, description, videoUrl, thumbnailUrl));
             } catch (JSONException e) {
                 Log.e(TAG, "Unable to parse step json");
             }
