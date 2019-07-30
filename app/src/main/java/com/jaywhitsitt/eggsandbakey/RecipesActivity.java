@@ -46,7 +46,9 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             }
         });
 
-        new RecipesFetchTask().execute();
+        if (savedInstanceState == null) {
+            new RecipesFetchTask().execute();
+        }
     }
 
     private class RecipesFetchTask extends AsyncTask<Void, Void, List<Recipe>> {
@@ -58,7 +60,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         }
 
         @Override
-        protected void onPostExecute(List<Recipe> recipes) {
+        protected void onPostExecute(final List<Recipe> recipes) {
             super.onPostExecute(recipes);
 
             Thread thread = new Thread(new Runnable() {
@@ -66,6 +68,9 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
                 public void run() {
                     mDb.recipeDao().deleteAll();
                     mDb.recipeDao().insertAll(recipes);
+                    for (Recipe recipe: recipes) {
+                        mDb.stepDao().addSteps(recipe.steps);
+                    }
                 }
             });
             thread.start();

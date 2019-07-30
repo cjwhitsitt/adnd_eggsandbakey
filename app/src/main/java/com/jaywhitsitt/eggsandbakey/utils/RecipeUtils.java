@@ -43,7 +43,7 @@ public class RecipeUtils {
                     int servings = obj.getInt(SERVINGS_KEY);
 //                    String imageUrl = obj.getString(IMAGE_KEY); // Always empty - can't support until valid data given
 
-                    recipes.add(new Recipe(id, name, servings, null));
+                    recipes.add(new Recipe(id, name, steps, servings, null));
 
 
                 } catch (JSONException e) {

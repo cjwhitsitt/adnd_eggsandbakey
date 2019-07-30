@@ -15,7 +15,7 @@ import java.util.List;
 public class Recipe implements Serializable {
 
     @PrimaryKey
-    public int id;
+    public Integer id;
     public String name;
 //    private List<Ingredient> ingredients;
     @Ignore
@@ -23,14 +23,14 @@ public class Recipe implements Serializable {
     public int servings;
     public String imageUrlString;
 
-    public Recipe(int id, String name, int servings, String imageUrlString) {
+    public Recipe(Integer id, String name, int servings, String imageUrlString) {
         this.id = id;
         this.name = name;
         this.servings = servings;
         this.imageUrlString = imageUrlString;
     }
 
-    public Recipe(int id, String name, /* List<Ingredient> ingredients,*/ List<Step> steps, int servings, String imageUrlString) {
+    public Recipe(Integer id, String name, /* List<Ingredient> ingredients,*/ List<Step> steps, int servings, String imageUrlString) {
         new Recipe(id, name, servings, imageUrlString);
 //        this.ingredients = ingredients;
         this.steps = steps;
