@@ -46,7 +46,9 @@ public class StepListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+    private List<Step> mSteps;
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,15 +75,19 @@ public class StepListActivity extends AppCompatActivity {
         View recyclerView = findViewById(R.id.step_list);
         assert recyclerView != null;
 
-        Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_STEPS)) {
-            Serializable extra = intent.getSerializableExtra(EXTRA_STEPS);
-            if (extra instanceof ArrayList) {
-                @SuppressWarnings("unchecked")
-                List<Step> steps = (List<Step>) extra;
-                setupRecyclerView((RecyclerView) recyclerView, steps);
+        if (savedInstanceState != null) {
+            mSteps = (List<Step>) savedInstanceState.getSerializable(EXTRA_STEPS);
+        } else {
+            Intent intent = getIntent();
+            if (intent.hasExtra(EXTRA_STEPS)) {
+                Serializable extra = intent.getSerializableExtra(EXTRA_STEPS);
+                if (extra instanceof ArrayList) {
+                    mSteps = (List<Step>) extra;
+                }
             }
         }
+
+        setupRecyclerView((RecyclerView) recyclerView, mSteps);
     }
 
     @Override
@@ -103,5 +109,11 @@ public class StepListActivity extends AppCompatActivity {
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView, List<Step> steps) {
         recyclerView.setAdapter(new StepAdapter(this, steps, mTwoPane));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(EXTRA_STEPS, (ArrayList<Step>) mSteps);
+        super.onSaveInstanceState(outState);
     }
 }

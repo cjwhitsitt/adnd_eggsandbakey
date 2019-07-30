@@ -27,7 +27,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
             Step step = (Step) view.getTag();
             if (mTwoPane) {
                 Bundle arguments = new Bundle();
-                arguments.putInt(StepDetailFragment.ARG_ITEM_ID, step.getId());
+                arguments.putSerializable(StepDetailFragment.ARG_STEP, step);
                 StepDetailFragment fragment = new StepDetailFragment();
                 fragment.setArguments(arguments);
                 mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -36,8 +36,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
             } else {
                 Context context = view.getContext();
                 Intent intent = new Intent(context, StepDetailActivity.class);
-                intent.putExtra(StepDetailFragment.ARG_ITEM_ID, step.getId());
-
+                intent.putExtra(StepDetailFragment.ARG_STEP, step);
                 context.startActivity(intent);
             }
         }
