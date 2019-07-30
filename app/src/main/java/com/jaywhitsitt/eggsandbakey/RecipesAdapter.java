@@ -17,13 +17,19 @@ import java.util.List;
 
 public class RecipesAdapter extends BaseAdapter {
 
+    interface OnClickHandler {
+        void onClickRecipe(int position);
+    }
+
     private static final String TAG = RecipesAdapter.class.getSimpleName();
 
     private Context mContext;
     private List<Recipe> mRecipes;
+    private OnClickHandler mOnClickHandler;
 
-    public RecipesAdapter(Context context) {
+    public RecipesAdapter(Context context, OnClickHandler handler) {
         mContext = context;
+        mOnClickHandler = handler;
     }
 
     public void setData(List<Recipe> recipes) {
@@ -69,6 +75,8 @@ public class RecipesAdapter extends BaseAdapter {
         } catch (NullPointerException e) {
             imageView.setVisibility(View.GONE);
         }
+
+        convertView.setOnClickListener(v -> mOnClickHandler.onClickRecipe(position));
 
         return convertView;
     }

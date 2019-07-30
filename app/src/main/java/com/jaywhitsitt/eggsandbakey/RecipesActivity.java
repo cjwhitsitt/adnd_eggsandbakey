@@ -2,6 +2,7 @@ package com.jaywhitsitt.eggsandbakey;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.GridView;
@@ -16,7 +17,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecipesActivity extends AppCompatActivity {
+public class RecipesActivity extends AppCompatActivity implements RecipesAdapter.OnClickHandler {
 
     @BindView(R.id.gv_recipes)
     GridView mGridView;
@@ -28,7 +29,7 @@ public class RecipesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipes);
         ButterKnife.bind(this);
 
-        mAdapter = new RecipesAdapter(this);
+        mAdapter = new RecipesAdapter(this, this);
         mGridView.setAdapter(mAdapter);
 
         new RecipesFetchTask().execute();
@@ -50,4 +51,11 @@ public class RecipesActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onClickRecipe(int position) {
+        Recipe recipe = mAdapter.getItem(position);
+
+        Intent intent = new Intent(this, StepListActivity.class);
+        startActivity(intent);
+    }
 }
