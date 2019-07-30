@@ -1,19 +1,22 @@
 package com.jaywhitsitt.eggsandbakey.data;
 
-public class Recipe {
+import java.io.Serializable;
+import java.util.List;
+
+public class Recipe implements Serializable {
 
     private int id;
     private String name;
 //    private List<Ingredient> ingredients;
-//    private List<Step> steps;
+    private List<Step> steps;
     private int servings;
     private String imageUrlString;
 
-    public Recipe(int id, String name, /* List<Ingredient> ingredients, List<Step> steps, */ int servings, String imageUrlString) {
+    public Recipe(int id, String name, /* List<Ingredient> ingredients,*/ List<Step> steps, int servings, String imageUrlString) {
         this.id = id;
         this.name = name;
 //        this.ingredients = ingredients;
-//        this.steps = steps;
+        this.steps = steps;
         this.servings = servings;
         this.imageUrlString = imageUrlString;
     }
@@ -24,6 +27,10 @@ public class Recipe {
 
     public String getName() {
         return name;
+    }
+
+    public List<Step> getSteps() {
+        return steps;
     }
 
     public int getServings() {

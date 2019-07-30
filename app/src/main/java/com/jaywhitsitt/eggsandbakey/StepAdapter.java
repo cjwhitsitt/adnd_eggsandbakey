@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jaywhitsitt.eggsandbakey.data.Step;
 import com.jaywhitsitt.eggsandbakey.dummy.DummyContent;
 
 import java.util.List;
@@ -18,15 +19,15 @@ import java.util.List;
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterViewHolder> {
 
     private final StepListActivity mParentActivity;
-    private final List<DummyContent.DummyItem> mValues;
+    private final List<Step> mValues;
     private final boolean mTwoPane;
     private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            DummyContent.DummyItem item = (DummyContent.DummyItem) view.getTag();
+            Step step = (Step) view.getTag();
             if (mTwoPane) {
                 Bundle arguments = new Bundle();
-                arguments.putString(StepDetailFragment.ARG_ITEM_ID, item.id);
+                arguments.putInt(StepDetailFragment.ARG_ITEM_ID, step.getId());
                 StepDetailFragment fragment = new StepDetailFragment();
                 fragment.setArguments(arguments);
                 mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -35,7 +36,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
             } else {
                 Context context = view.getContext();
                 Intent intent = new Intent(context, StepDetailActivity.class);
-                intent.putExtra(StepDetailFragment.ARG_ITEM_ID, item.id);
+                intent.putExtra(StepDetailFragment.ARG_ITEM_ID, step.getId());
 
                 context.startActivity(intent);
             }
@@ -43,7 +44,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
     };
 
     public StepAdapter(StepListActivity parent,
-                       List<DummyContent.DummyItem> items,
+                       List<Step> items,
                        boolean twoPane) {
         mValues = items;
         mParentActivity = parent;
@@ -65,8 +66,8 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
 
     @Override
     public void onBindViewHolder(final StepAdapterViewHolder holder, int position) {
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(String.valueOf(mValues.get(position).getId() + 1));
+        holder.mContentView.setText(mValues.get(position).getShortDescription());
 
         holder.itemView.setTag(mValues.get(position));
         holder.itemView.setOnClickListener(mOnClickListener);

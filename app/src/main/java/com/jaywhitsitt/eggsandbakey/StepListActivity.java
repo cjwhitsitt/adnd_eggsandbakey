@@ -22,8 +22,11 @@ import androidx.appcompat.app.ActionBar;
 
 import android.view.MenuItem;
 
+import com.jaywhitsitt.eggsandbakey.data.Step;
 import com.jaywhitsitt.eggsandbakey.dummy.DummyContent;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,6 +38,8 @@ import java.util.List;
  * item details side-by-side using two vertical panes.
  */
 public class StepListActivity extends AppCompatActivity {
+
+    public static final String EXTRA_STEPS = "com.jaywhitsitt.eggsandbakey.StepListActivity.steps";
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -67,7 +72,16 @@ public class StepListActivity extends AppCompatActivity {
 
         View recyclerView = findViewById(R.id.step_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+
+        Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_STEPS)) {
+            Serializable extra = intent.getSerializableExtra(EXTRA_STEPS);
+            if (extra instanceof ArrayList) {
+                @SuppressWarnings("unchecked")
+                List<Step> steps = (List<Step>) extra;
+                setupRecyclerView((RecyclerView) recyclerView, steps);
+            }
+        }
     }
 
     @Override
@@ -87,7 +101,7 @@ public class StepListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new StepAdapter(this, DummyContent.ITEMS, mTwoPane));
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView, List<Step> steps) {
+        recyclerView.setAdapter(new StepAdapter(this, steps, mTwoPane));
     }
 }

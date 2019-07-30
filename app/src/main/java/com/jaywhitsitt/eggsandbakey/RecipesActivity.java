@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.widget.GridView;
 
 import com.jaywhitsitt.eggsandbakey.data.Recipe;
+import com.jaywhitsitt.eggsandbakey.data.Step;
 import com.jaywhitsitt.eggsandbakey.utils.NetworkUtils;
 import com.jaywhitsitt.eggsandbakey.utils.RecipeUtils;
 
@@ -56,6 +57,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         Recipe recipe = mAdapter.getItem(position);
 
         Intent intent = new Intent(this, StepListActivity.class);
+        intent.putExtra(StepListActivity.EXTRA_STEPS, (ArrayList<Step>) recipe.getSteps());
         startActivity(intent);
     }
 }
