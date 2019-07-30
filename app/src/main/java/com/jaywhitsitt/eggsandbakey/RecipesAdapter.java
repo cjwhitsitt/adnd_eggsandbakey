@@ -2,6 +2,7 @@ package com.jaywhitsitt.eggsandbakey;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +22,13 @@ public class RecipesAdapter extends BaseAdapter {
     private Context mContext;
     private List<Recipe> mRecipes;
 
-    public RecipesAdapter(Context context, List<Recipe> recipes) {
+    public RecipesAdapter(Context context) {
         mContext = context;
+    }
+
+    public void setData(List<Recipe> recipes) {
         mRecipes = recipes;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -67,4 +72,5 @@ public class RecipesAdapter extends BaseAdapter {
 
         return convertView;
     }
+
 }

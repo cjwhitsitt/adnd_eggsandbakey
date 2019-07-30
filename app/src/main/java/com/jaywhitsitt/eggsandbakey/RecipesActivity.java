@@ -2,10 +2,13 @@ package com.jaywhitsitt.eggsandbakey;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.GridView;
 
 import com.jaywhitsitt.eggsandbakey.data.Recipe;
+import com.jaywhitsitt.eggsandbakey.utils.NetworkUtils;
+import com.jaywhitsitt.eggsandbakey.utils.RecipeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,7 @@ public class RecipesActivity extends AppCompatActivity {
 
     @BindView(R.id.gv_recipes)
     GridView mGridView;
+    RecipesAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +28,26 @@ public class RecipesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipes);
         ButterKnife.bind(this);
 
-        List<Recipe> recipes = new ArrayList<>();
-        recipes.add(new Recipe(0, "Test", 2, ""));
-        mGridView.setAdapter(new RecipesAdapter(this, recipes));
+        mAdapter = new RecipesAdapter(this);
+        mGridView.setAdapter(mAdapter);
+
+        new RecipesFetchTask().execute();
+    }
+
+    private class RecipesFetchTask extends AsyncTask<Void, Void, List<Recipe>> {
+
+        @Override
+        protected List<Recipe> doInBackground(Void... voids) {
+            String response = NetworkUtils.recipesResponse();
+            return RecipeUtils.getRecipesFromJson(response);
+        }
+
+        @Override
+        protected void onPostExecute(List<Recipe> recipes) {
+            super.onPostExecute(recipes);
+            mAdapter.setData(recipes);
+        }
+
     }
 
 }
