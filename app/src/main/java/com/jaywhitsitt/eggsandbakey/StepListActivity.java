@@ -1,5 +1,6 @@
 package com.jaywhitsitt.eggsandbakey;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -31,7 +32,7 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class StepListActivity extends AppCompatActivity {
+public class StepListActivity extends AppCompatActivity implements StepAdapter.ShowDetailListener {
 
     public static final String EXTRA_RECIPE_ID = "com.jaywhitsitt.eggsandbakey.StepListActivity.recipeId";
 
@@ -40,7 +41,7 @@ public class StepListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-    private int mCurrentRecipeId;
+    private Recipe mCurrentRecipe;
     private AppDatabase mDB;
     private StepAdapter mAdapter;
 
@@ -71,14 +72,20 @@ public class StepListActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.step_list);
         assert recyclerView != null;
-        mAdapter = new StepAdapter(this, mTwoPane);
+        mAdapter = new StepAdapter(this);
         recyclerView.setAdapter(mAdapter);
 
-        mDB = AppDatabase.getInstance(this);
+        mDB = AppDatabase.getInstance();
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_RECIPE_ID)) {
-            mCurrentRecipeId = intent.getIntExtra(EXTRA_RECIPE_ID, -1);
-            mDB.stepDao().getStepsForRecipe(mCurrentRecipeId).observe(this, new Observer<List<Step>>() {
+            int recipeId = intent.getIntExtra(EXTRA_RECIPE_ID, -1);
+            mDB.recipeDao().getRecipeById(recipeId).observe(this, new Observer<Recipe>() {
+                @Override
+                public void onChanged(Recipe recipe) {
+                    mCurrentRecipe = recipe;
+                }
+            });
+            mDB.stepDao().getStepsForRecipe(recipeId).observe(this, new Observer<List<Step>>() {
                 @Override
                 public void onChanged(List<Step> steps) {
                     mAdapter.setSteps(steps);
@@ -99,7 +106,43 @@ public class StepListActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(EXTRA_RECIPE_ID, mCurrentRecipeId);
+        outState.putInt(EXTRA_RECIPE_ID, mCurrentRecipe.id);
         super.onSaveInstanceState(outState);
+    }
+
+    /*
+    ShowDetailListener methods
+     */
+
+    @Override
+    public void showStep(Step step, View view) {
+        Bundle extras = new Bundle();
+        extras.putSerializable(StepDetailFragment.ARG_STEP, step);
+        extras.putBoolean(StepDetailFragment.ARG_IS_LAST, step.stepId >= mCurrentRecipe.steps.size() - 1);
+
+        if (mTwoPane) {
+            StepDetailFragment fragment = new StepDetailFragment();
+            fragment.setArguments(extras);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.step_detail_container, fragment)
+                    .commit();
+
+            View playFab = findViewById(R.id.fab_play);
+            if (playFab != null) {
+                boolean hasVideo = step.videoUrl != null && step.videoUrl.length() > 0;
+                playFab.setVisibility(hasVideo ? View.VISIBLE : View.GONE);
+            }
+
+        } else {
+            Context context = view.getContext();
+            Intent intent = new Intent(context, StepDetailActivity.class);
+            intent.putExtras(extras);
+            context.startActivity(intent);
+        }
+    }
+
+    @Override
+    public void showIngredients(View view) {
+        // TODO:
     }
 }

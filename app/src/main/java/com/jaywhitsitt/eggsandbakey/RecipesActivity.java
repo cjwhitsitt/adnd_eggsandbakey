@@ -37,7 +37,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         mAdapter = new RecipesAdapter(this, this);
         mGridView.setAdapter(mAdapter);
 
-        mDb = AppDatabase.getInstance(this);
+        mDb = AppDatabase.getInstance();
         LiveData<List<Recipe>> recipes = mDb.recipeDao().getAll();
         recipes.observe(this, new Observer<List<Recipe>>() {
             @Override

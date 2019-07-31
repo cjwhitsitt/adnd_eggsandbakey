@@ -19,14 +19,16 @@ import java.util.List;
 
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterViewHolder> {
 
-    private final StepListActivity mParentActivity;
-    private List<Step> mSteps;
-    private final boolean mTwoPane;
+    public interface ShowDetailListener {
+        void showStep(Step step, View view);
+        void showIngredients(View view);
+    }
 
-    public StepAdapter(StepListActivity parent,
-                       boolean twoPane) {
-        mParentActivity = parent;
-        mTwoPane = twoPane;
+    private final ShowDetailListener mShowListener;
+    private List<Step> mSteps;
+
+    public StepAdapter(ShowDetailListener listener) {
+        mShowListener = listener;
     }
 
     public void setSteps(List<Step> steps) {
@@ -71,9 +73,9 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
             @Override
             public void onClick(View v) {
                 if (position == 0) {
-                    // TODO: open ingredients
+                    mShowListener.showIngredients(v);
                 } else {
-                    showStep((Step) v.getTag(), v);
+                    mShowListener.showStep((Step) v.getTag(), v);
                 }
             }
         });
@@ -90,32 +92,6 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
             mContentView = (TextView) itemView.findViewById(R.id.content);
         }
 
-    }
-
-    private void showStep(Step step, View view) {
-        Bundle extras = new Bundle();
-        extras.putSerializable(StepDetailFragment.ARG_STEP, step);
-        extras.putBoolean(StepDetailFragment.ARG_IS_LAST, step.stepId >= mSteps.size() - 1);
-
-        if (mTwoPane) {
-            StepDetailFragment fragment = new StepDetailFragment();
-            fragment.setArguments(extras);
-            mParentActivity.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.step_detail_container, fragment)
-                    .commit();
-
-            View playFab = mParentActivity.findViewById(R.id.fab_play);
-            if (playFab != null) {
-                boolean hasVideo = step.videoUrl != null && step.videoUrl.length() > 0;
-                playFab.setVisibility(hasVideo ? View.VISIBLE : View.GONE);
-            }
-
-        } else {
-            Context context = view.getContext();
-            Intent intent = new Intent(context, StepDetailActivity.class);
-            intent.putExtras(extras);
-            context.startActivity(intent);
-        }
     }
 
 }
