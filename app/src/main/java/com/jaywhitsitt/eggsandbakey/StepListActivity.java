@@ -23,7 +23,6 @@ import androidx.appcompat.app.ActionBar;
 import android.view.MenuItem;
 
 import com.jaywhitsitt.eggsandbakey.data.Step;
-import com.jaywhitsitt.eggsandbakey.dummy.DummyContent;
 
 import java.io.Serializable;
 import java.util.ArrayList;

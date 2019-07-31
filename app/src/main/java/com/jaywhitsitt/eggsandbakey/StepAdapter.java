@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jaywhitsitt.eggsandbakey.data.Step;
-import com.jaywhitsitt.eggsandbakey.dummy.DummyContent;
 
 import java.util.List;
 

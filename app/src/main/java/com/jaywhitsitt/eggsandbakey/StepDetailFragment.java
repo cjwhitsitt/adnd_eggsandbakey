@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.jaywhitsitt.eggsandbakey.data.Step;
-import com.jaywhitsitt.eggsandbakey.dummy.DummyContent;
 
 /**
  * A fragment representing a single Step detail screen.

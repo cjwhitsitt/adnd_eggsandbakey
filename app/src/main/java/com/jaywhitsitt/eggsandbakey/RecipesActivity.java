@@ -66,7 +66,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    mDb.recipeDao().deleteAll();
+                    mDb.clearAllTables();
                     mDb.recipeDao().insertAll(recipes);
                     for (Recipe recipe: recipes) {
                         mDb.stepDao().addSteps(recipe.steps);
