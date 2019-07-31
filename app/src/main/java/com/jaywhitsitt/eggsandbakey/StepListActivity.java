@@ -18,6 +18,7 @@ import androidx.appcompat.app.ActionBar;
 import android.view.MenuItem;
 
 import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
+import com.jaywhitsitt.eggsandbakey.data.Recipe;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 
 import java.util.List;
@@ -40,7 +41,6 @@ public class StepListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     private int mCurrentRecipeId;
-    private List<Step> mSteps;
     private AppDatabase mDB;
     private StepAdapter mAdapter;
 
@@ -66,6 +66,8 @@ public class StepListActivity extends AppCompatActivity {
             // If this view is present, then the
             // activity should be in two-pane mode.
             mTwoPane = true;
+        } else {
+            findViewById(R.id.fab_play).setVisibility(View.GONE);
         }
 
         RecyclerView recyclerView = findViewById(R.id.step_list);
@@ -77,14 +79,12 @@ public class StepListActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_RECIPE_ID)) {
             mCurrentRecipeId = intent.getIntExtra(EXTRA_RECIPE_ID, -1);
-             LiveData<List<Step>> steps = mDB.stepDao().getStepsForRecipe(mCurrentRecipeId);
-             steps.observe(this, new Observer<List<Step>>() {
-                 @Override
-                 public void onChanged(List<Step> steps) {
-                     mSteps = steps;
-                     mAdapter.setData(steps);
-                 }
-             });
+            mDB.stepDao().getStepsForRecipe(mCurrentRecipeId).observe(this, new Observer<List<Step>>() {
+                @Override
+                public void onChanged(List<Step> steps) {
+                    mAdapter.setSteps(steps);
+                }
+            });
         }
     }
 

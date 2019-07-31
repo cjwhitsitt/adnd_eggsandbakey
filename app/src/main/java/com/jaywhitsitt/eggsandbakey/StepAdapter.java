@@ -11,35 +11,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jaywhitsitt.eggsandbakey.data.Recipe;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterViewHolder> {
 
     private final StepListActivity mParentActivity;
-    private List<Step> mValues;
+    private List<Step> mSteps;
     private final boolean mTwoPane;
-    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Step step = (Step) view.getTag();
-            if (mTwoPane) {
-                Bundle arguments = new Bundle();
-                arguments.putSerializable(StepDetailFragment.ARG_STEP, step);
-                StepDetailFragment fragment = new StepDetailFragment();
-                fragment.setArguments(arguments);
-                mParentActivity.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.step_detail_container, fragment)
-                        .commit();
-            } else {
-                Context context = view.getContext();
-                Intent intent = new Intent(context, StepDetailActivity.class);
-                intent.putExtra(StepDetailFragment.ARG_STEP, step);
-                context.startActivity(intent);
-            }
-        }
-    };
 
     public StepAdapter(StepListActivity parent,
                        boolean twoPane) {
@@ -47,14 +29,15 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
         mTwoPane = twoPane;
     }
 
-    public void setData(List<Step> steps) {
-        mValues = steps;
+    public void setSteps(List<Step> steps) {
+        mSteps = steps;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return mValues == null ? 0 : mValues.size();
+        int numberOfSteps = mSteps == null ? 0 : mSteps.size();
+        return numberOfSteps + 1;
     }
 
     @NonNull
@@ -66,12 +49,34 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
     }
 
     @Override
-    public void onBindViewHolder(final StepAdapterViewHolder holder, int position) {
-        holder.mIdView.setText(String.valueOf(mValues.get(position).stepId + 1));
-        holder.mContentView.setText(mValues.get(position).shortDescription);
+    public void onBindViewHolder(final StepAdapterViewHolder holder, final int position) {
+        holder.mIdView.setVisibility(position > 1 ? View.VISIBLE : View.GONE);
 
-        holder.itemView.setTag(mValues.get(position));
-        holder.itemView.setOnClickListener(mOnClickListener);
+        String description;
+        Serializable tag;
+        if (position == 0) {
+            description = "Recipe Ingredients";
+            tag = null;
+        } else {
+            int index = position - 1;
+            description = mSteps.get(index).shortDescription;
+            tag = mSteps.get(index);
+            if (index > 0) {
+                holder.mIdView.setText(String.valueOf(mSteps.get(index).stepId));
+            }
+        }
+        holder.mContentView.setText(description);
+        holder.itemView.setTag(tag);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (position == 0) {
+                    // TODO: open ingredients
+                } else {
+                    showStep((Step) v.getTag(), v);
+                }
+            }
+        });
     }
 
     class StepAdapterViewHolder extends RecyclerView.ViewHolder {
@@ -85,6 +90,30 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
             mContentView = (TextView) itemView.findViewById(R.id.content);
         }
 
+    }
+
+    private void showStep(Step step, View view) {
+        if (mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putSerializable(StepDetailFragment.ARG_STEP, step);
+            StepDetailFragment fragment = new StepDetailFragment();
+            fragment.setArguments(arguments);
+            mParentActivity.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.step_detail_container, fragment)
+                    .commit();
+
+            View playFab = mParentActivity.findViewById(R.id.fab_play);
+            if (playFab != null) {
+                boolean hasVideo = step.videoUrl != null && step.videoUrl.length() > 0;
+                playFab.setVisibility(hasVideo ? View.VISIBLE : View.GONE);
+            }
+
+        } else {
+            Context context = view.getContext();
+            Intent intent = new Intent(context, StepDetailActivity.class);
+            intent.putExtra(StepDetailFragment.ARG_STEP, step);
+            context.startActivity(intent);
+        }
     }
 
 }
