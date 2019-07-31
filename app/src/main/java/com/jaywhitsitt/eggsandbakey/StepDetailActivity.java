@@ -23,11 +23,6 @@ import android.view.MenuItem;
  */
 public class StepDetailActivity extends AppCompatActivity {
 
-    /**
-     * The activity extra for whether or not this step is the last for the recipe.
-     */
-    public static final String EXTRA_IS_LAST = "isLast";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +36,7 @@ public class StepDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        boolean isLast = getIntent().getBooleanExtra(StepDetailActivity.EXTRA_IS_LAST, false);
+        boolean isLast = getIntent().getBooleanExtra(StepDetailFragment.ARG_IS_LAST, false);
         Step step = (Step) getIntent().getSerializableExtra(StepDetailFragment.ARG_STEP);
 
         // savedInstanceState is non-null when there is fragment state
@@ -58,6 +53,7 @@ public class StepDetailActivity extends AppCompatActivity {
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putSerializable(StepDetailFragment.ARG_STEP, step);
+            arguments.putBoolean(StepDetailFragment.ARG_IS_LAST, isLast);
             StepDetailFragment fragment = new StepDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -77,8 +73,11 @@ public class StepDetailActivity extends AppCompatActivity {
             });
         }
 
-        if (isLast == false) {
-            findViewById(R.id.fab_next).setOnClickListener(new View.OnClickListener() {
+        View nextFab = findViewById(R.id.fab_next);
+        if (isLast) {
+            nextFab.setVisibility(View.GONE);
+        } else {
+            nextFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Snackbar.make(v, "TODO: Next step", Snackbar.LENGTH_LONG).show();

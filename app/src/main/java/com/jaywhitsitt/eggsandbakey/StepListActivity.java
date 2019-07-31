@@ -44,7 +44,6 @@ public class StepListActivity extends AppCompatActivity {
     private AppDatabase mDB;
     private StepAdapter mAdapter;
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

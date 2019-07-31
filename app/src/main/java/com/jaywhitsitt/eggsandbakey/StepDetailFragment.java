@@ -27,6 +27,10 @@ public class StepDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_STEP = "step";
+    /**
+     * The fragment argumnt for whether or not this step is the last for the recipe.
+     */
+    public static final String ARG_IS_LAST = "isLast";
 
     /**
      * The dummy content this fragment is presenting.

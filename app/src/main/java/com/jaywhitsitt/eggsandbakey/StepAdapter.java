@@ -93,11 +93,13 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
     }
 
     private void showStep(Step step, View view) {
+        Bundle extras = new Bundle();
+        extras.putSerializable(StepDetailFragment.ARG_STEP, step);
+        extras.putBoolean(StepDetailFragment.ARG_IS_LAST, step.stepId >= mSteps.size() - 1);
+
         if (mTwoPane) {
-            Bundle arguments = new Bundle();
-            arguments.putSerializable(StepDetailFragment.ARG_STEP, step);
             StepDetailFragment fragment = new StepDetailFragment();
-            fragment.setArguments(arguments);
+            fragment.setArguments(extras);
             mParentActivity.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.step_detail_container, fragment)
                     .commit();
@@ -111,7 +113,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
         } else {
             Context context = view.getContext();
             Intent intent = new Intent(context, StepDetailActivity.class);
-            intent.putExtra(StepDetailFragment.ARG_STEP, step);
+            intent.putExtras(extras);
             context.startActivity(intent);
         }
     }
