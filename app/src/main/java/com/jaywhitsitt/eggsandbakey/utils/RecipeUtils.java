@@ -29,7 +29,7 @@ public class RecipeUtils {
     private final static String VIDEO_URL_KEY = "videoURL";
     private final static String THUMBNAIL_URL_KEY = "thumbnailURL";
 
-    private final static String QUANTITY_KEY = "quanity";
+    private final static String QUANTITY_KEY = "quantity";
     private final static String MEASURE_KEY = "measure";
     private final static String INGREDIENT_KEY = "ingredient";
 
