@@ -70,6 +70,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
                     mDb.recipeDao().insertAll(recipes);
                     for (Recipe recipe: recipes) {
                         mDb.stepDao().addSteps(recipe.steps);
+                        mDb.ingredientDao().addIngredients(recipe.ingredients);
                     }
                 }
             });

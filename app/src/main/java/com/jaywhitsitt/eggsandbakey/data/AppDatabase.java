@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 
 import com.jaywhitsitt.eggsandbakey.MyApplication;
 
-@Database(entities = {Recipe.class, Step.class},
+@Database(entities = {Recipe.class, Step.class, Ingredient.class},
         version = 1,
         exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
@@ -27,5 +27,6 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract RecipeDao recipeDao();
     public abstract StepDao stepDao();
+    public abstract IngredientDao ingredientDao();
 
 }
