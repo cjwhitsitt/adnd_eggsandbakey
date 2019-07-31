@@ -3,15 +3,17 @@ package com.jaywhitsitt.eggsandbakey.data;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class Ingredient {
+public class Ingredient implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     Integer id = 0;
-    final Integer recipeId;
-    final Integer quantity;
-    final String unit;
-    final String name;
+    public final Integer recipeId;
+    public final Integer quantity;
+    public final String unit;
+    public final String name;
 
     public Ingredient(Integer recipeId, Integer quantity, String unit, String name) {
         this.recipeId = recipeId;

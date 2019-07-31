@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.jaywhitsitt.eggsandbakey.data.Ingredient;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 
 import androidx.appcompat.widget.Toolbar;
@@ -12,8 +13,12 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.MenuItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An activity representing a single Step detail screen. This
@@ -38,6 +43,8 @@ public class StepDetailActivity extends AppCompatActivity {
 
         boolean isLast = getIntent().getBooleanExtra(StepDetailFragment.ARG_IS_LAST, false);
         Step step = (Step) getIntent().getSerializableExtra(StepDetailFragment.ARG_STEP);
+        @SuppressWarnings("unchecked")
+        List<Ingredient> ingredients = (List<Ingredient>) getIntent().getSerializableExtra(StepDetailFragment.ARG_INGREDIENTS);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -52,8 +59,13 @@ public class StepDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putSerializable(StepDetailFragment.ARG_STEP, step);
             arguments.putBoolean(StepDetailFragment.ARG_IS_LAST, isLast);
+            if (step != null) {
+                arguments.putSerializable(StepDetailFragment.ARG_STEP, step);
+            }
+            if (ingredients != null) {
+                arguments.putSerializable(StepDetailFragment.ARG_INGREDIENTS, (ArrayList<Ingredient>) ingredients);
+            }
             StepDetailFragment fragment = new StepDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -61,7 +73,7 @@ public class StepDetailActivity extends AppCompatActivity {
                     .commit();
         }
 
-        boolean hasVideo = step.videoUrl != null && step.videoUrl.length() > 0;
+        boolean hasVideo = step != null && step.videoUrl != null && step.videoUrl.length() > 0;
         View playFab = findViewById(R.id.fab_play);
         playFab.setVisibility(hasVideo ? View.VISIBLE : View.GONE);
         if (hasVideo) {

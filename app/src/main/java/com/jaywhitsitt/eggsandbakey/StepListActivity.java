@@ -19,9 +19,11 @@ import androidx.appcompat.app.ActionBar;
 import android.view.MenuItem;
 
 import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
+import com.jaywhitsitt.eggsandbakey.data.Ingredient;
 import com.jaywhitsitt.eggsandbakey.data.Recipe;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -143,6 +145,22 @@ public class StepListActivity extends AppCompatActivity implements StepAdapter.S
 
     @Override
     public void showIngredients(View view) {
-        // TODO:
+        Bundle extras = new Bundle();
+        extras.putSerializable(StepDetailFragment.ARG_INGREDIENTS, (ArrayList<Ingredient>) mCurrentRecipe.ingredients);
+
+        if (mTwoPane) {
+            StepDetailFragment fragment = new StepDetailFragment();
+            fragment.setArguments(extras);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.step_detail_container, fragment)
+                    .commit();
+            findViewById(R.id.fab_play).setVisibility(View.GONE);
+
+        } else {
+            Context context = view.getContext();
+            Intent intent = new Intent(context, StepDetailActivity.class);
+            intent.putExtras(extras);
+            context.startActivity(intent);
+        }
     }
 }
