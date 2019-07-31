@@ -18,7 +18,7 @@ import java.util.List;
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterViewHolder> {
 
     private final StepListActivity mParentActivity;
-    private final List<Step> mValues;
+    private List<Step> mValues;
     private final boolean mTwoPane;
     private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -42,16 +42,19 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
     };
 
     public StepAdapter(StepListActivity parent,
-                       List<Step> items,
                        boolean twoPane) {
-        mValues = items;
         mParentActivity = parent;
         mTwoPane = twoPane;
     }
 
+    public void setData(List<Step> steps) {
+        mValues = steps;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mValues == null ? 0 : mValues.size();
     }
 
     @NonNull

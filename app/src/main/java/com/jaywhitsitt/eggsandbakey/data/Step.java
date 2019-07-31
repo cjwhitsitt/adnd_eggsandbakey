@@ -22,14 +22,14 @@ import static androidx.room.ForeignKey.CASCADE;
 )
 public class Step implements Serializable {
 
-    @NonNull public Integer stepId;
-    @NonNull public Integer recipeId;
+    @NonNull public final Integer stepId;
+    @NonNull public final Integer recipeId;
     public String shortDescription;
     public String description;
     public String videoUrl;
     public String thumbnailUrl;
 
-    public Step(Integer stepId, Integer recipeId, String shortDescription, String description, String videoUrl, String thumbnailUrl) {
+    public Step(@NonNull Integer stepId, @NonNull Integer recipeId, String shortDescription, String description, String videoUrl, String thumbnailUrl) {
         this.stepId = stepId;
         this.recipeId = recipeId;
         this.shortDescription = shortDescription;

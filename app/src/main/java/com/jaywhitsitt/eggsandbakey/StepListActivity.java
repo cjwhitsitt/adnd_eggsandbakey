@@ -1,31 +1,25 @@
 package com.jaywhitsitt.eggsandbakey;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.core.app.NavUtils;
 import androidx.appcompat.app.ActionBar;
 
 import android.view.MenuItem;
 
+import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,14 +32,17 @@ import java.util.List;
  */
 public class StepListActivity extends AppCompatActivity {
 
-    public static final String EXTRA_STEPS = "com.jaywhitsitt.eggsandbakey.StepListActivity.steps";
+    public static final String EXTRA_RECIPE_ID = "com.jaywhitsitt.eggsandbakey.StepListActivity.recipeId";
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
+    private int mCurrentRecipeId;
     private List<Step> mSteps;
+    private AppDatabase mDB;
+    private StepAdapter mAdapter;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -71,48 +68,39 @@ public class StepListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        View recyclerView = findViewById(R.id.step_list);
+        RecyclerView recyclerView = findViewById(R.id.step_list);
         assert recyclerView != null;
+        mAdapter = new StepAdapter(this, mTwoPane);
+        recyclerView.setAdapter(mAdapter);
 
-        if (savedInstanceState != null) {
-            mSteps = (List<Step>) savedInstanceState.getSerializable(EXTRA_STEPS);
-        } else {
-            Intent intent = getIntent();
-            if (intent.hasExtra(EXTRA_STEPS)) {
-                Serializable extra = intent.getSerializableExtra(EXTRA_STEPS);
-                if (extra instanceof ArrayList) {
-                    mSteps = (List<Step>) extra;
-                }
-            }
+        mDB = AppDatabase.getInstance(this);
+        Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_RECIPE_ID)) {
+            mCurrentRecipeId = intent.getIntExtra(EXTRA_RECIPE_ID, -1);
+             LiveData<List<Step>> steps = mDB.stepDao().getStepsForRecipe(mCurrentRecipeId);
+             steps.observe(this, new Observer<List<Step>>() {
+                 @Override
+                 public void onChanged(List<Step> steps) {
+                     mSteps = steps;
+                     mAdapter.setData(steps);
+                 }
+             });
         }
-
-        setupRecyclerView((RecyclerView) recyclerView, mSteps);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpFromSameTask(this);
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView, List<Step> steps) {
-        recyclerView.setAdapter(new StepAdapter(this, steps, mTwoPane));
-    }
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(EXTRA_STEPS, (ArrayList<Step>) mSteps);
+        outState.putInt(EXTRA_RECIPE_ID, mCurrentRecipeId);
         super.onSaveInstanceState(outState);
     }
 }

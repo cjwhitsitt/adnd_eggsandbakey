@@ -20,8 +20,8 @@ public class Recipe implements Serializable {
 //    private List<Ingredient> ingredients;
     @Ignore
     public List<Step> steps;
-    public final int servings;
-    public final String imageUrlString;
+    public int servings;
+    public String imageUrlString;
 
     public Recipe(Integer id, String name, int servings, String imageUrlString) {
         this.id = id;

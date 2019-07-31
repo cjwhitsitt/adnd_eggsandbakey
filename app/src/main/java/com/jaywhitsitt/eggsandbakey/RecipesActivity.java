@@ -83,7 +83,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         Recipe recipe = mAdapter.getItem(position);
 
         Intent intent = new Intent(this, StepListActivity.class);
-        intent.putExtra(StepListActivity.EXTRA_STEPS, (ArrayList<Step>) recipe.steps);
+        intent.putExtra(StepListActivity.EXTRA_RECIPE_ID, recipe.id);
         startActivity(intent);
     }
 }
