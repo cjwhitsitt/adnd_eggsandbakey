@@ -86,13 +86,18 @@ public class StepDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.step_detail, container, false);
         TextView textView = rootView.findViewById(R.id.step_detail);
+        String text = "";
 
         // Show the dummy content as text in a TextView.
         if (mStep != null) {
-            textView.setText(mStep.description);
+            text = mStep.description;
         } else if (mIngredients != null) {
-            textView.setText(mIngredients.get(0).name);
+            for (Ingredient ingredient: mIngredients) {
+                // TODO: localize
+                text += String.valueOf(ingredient.quantity) + " " + ingredient.unit + " of " + ingredient.name + "\n";
+            }
         }
+        textView.setText(text);
 
         return rootView;
     }
