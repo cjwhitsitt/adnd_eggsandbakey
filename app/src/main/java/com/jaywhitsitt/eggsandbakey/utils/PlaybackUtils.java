@@ -1,8 +1,12 @@
 package com.jaywhitsitt.eggsandbakey.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -29,14 +33,31 @@ public class PlaybackUtils {
     }
 
     public static void startVideo(Context context, String url) {
-        // TODO: verify valid url
         if (url == null || url.length() <= 0) {
             throw new InvalidParameterException("url parameter is required but invalid");
         }
 
-        Intent intent = new Intent(context, VideoActivity.class);
-        intent.putExtra(VideoActivity.EXTRA_VIDEO_URL, url);
-        context.startActivity(intent);
+        Uri uri = Uri.parse(url);
+        String type = getMimeType(context, uri);
+        if (type == null || !type.startsWith("video/")) {
+            Toast.makeText(context, "The linked video isn't valid", Toast.LENGTH_LONG).show();
+        } else {
+            Intent intent = new Intent(context, VideoActivity.class);
+            intent.putExtra(VideoActivity.EXTRA_VIDEO_URL, url);
+            context.startActivity(intent);
+        }
+    }
+
+    private static String getMimeType(Context context, Uri uri) {
+        String mimeType;
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            ContentResolver cr = context.getContentResolver();
+            mimeType = cr.getType(uri);
+        } else {
+            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase());
+        }
+        return mimeType;
     }
 
 }
