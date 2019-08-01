@@ -14,4 +14,5 @@ public class MyApplication extends Application {
         singleton = this;
         super.onCreate();
     }
+
 }

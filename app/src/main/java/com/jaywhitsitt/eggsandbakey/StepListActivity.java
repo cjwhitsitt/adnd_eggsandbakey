@@ -18,10 +18,12 @@ import androidx.appcompat.app.ActionBar;
 
 import android.view.MenuItem;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
 import com.jaywhitsitt.eggsandbakey.data.Ingredient;
 import com.jaywhitsitt.eggsandbakey.data.Recipe;
 import com.jaywhitsitt.eggsandbakey.data.Step;
+import com.jaywhitsitt.eggsandbakey.utils.PlaybackUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,10 +132,7 @@ public class StepListActivity extends AppCompatActivity implements StepAdapter.S
                     .commit();
 
             View playFab = findViewById(R.id.fab_play);
-            if (playFab != null) {
-                boolean hasVideo = step.videoUrl != null && step.videoUrl.length() > 0;
-                playFab.setVisibility(hasVideo ? View.VISIBLE : View.GONE);
-            }
+            PlaybackUtils.setupPlayFab(this, step, playFab);
 
         } else {
             Context context = view.getContext();
@@ -163,4 +162,5 @@ public class StepListActivity extends AppCompatActivity implements StepAdapter.S
             context.startActivity(intent);
         }
     }
+
 }

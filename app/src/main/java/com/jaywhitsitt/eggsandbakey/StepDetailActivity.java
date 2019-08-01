@@ -6,6 +6,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.jaywhitsitt.eggsandbakey.data.Ingredient;
 import com.jaywhitsitt.eggsandbakey.data.Step;
+import com.jaywhitsitt.eggsandbakey.utils.PlaybackUtils;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -73,17 +74,9 @@ public class StepDetailActivity extends AppCompatActivity {
                     .commit();
         }
 
-        boolean hasVideo = step != null && step.videoUrl != null && step.videoUrl.length() > 0;
+        // TODO: use common code
         View playFab = findViewById(R.id.fab_play);
-        playFab.setVisibility(hasVideo ? View.VISIBLE : View.GONE);
-        if (hasVideo) {
-            playFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Snackbar.make(v, "TODO: Play video", Snackbar.LENGTH_LONG).show();
-                }
-            });
-        }
+        PlaybackUtils.setupPlayFab(this, step, playFab);
 
         View nextFab = findViewById(R.id.fab_next);
         if (isLast) {

@@ -36,28 +36,30 @@ public class RecipeUtils {
     public static List<Recipe> getRecipesFromJson(String jsonString) {
         List<Recipe> recipes = new ArrayList<>();
 
-        try {
-            JSONArray array = new JSONArray(jsonString);
-            for (int i = 0; i < array.length(); i++) {
-                try {
-                    JSONObject obj = array.getJSONObject(i);
-                    int id = obj.getInt(ID_KEY);
-                    String name = obj.getString(NAME_KEY);
-                    List<Ingredient> ingredients = getIngredientsFromJsonObject(obj.getJSONArray(INGREDIENTS_KEY), id);
-                    List<Step> steps = getStepsFromJsonObject(obj.getJSONArray(STEPS_KEY), id);
-                    int servings = obj.getInt(SERVINGS_KEY);
+        if (jsonString != null && jsonString.length() > 0) {
+            try {
+                JSONArray array = new JSONArray(jsonString);
+                for (int i = 0; i < array.length(); i++) {
+                    try {
+                        JSONObject obj = array.getJSONObject(i);
+                        int id = obj.getInt(ID_KEY);
+                        String name = obj.getString(NAME_KEY);
+                        List<Ingredient> ingredients = getIngredientsFromJsonObject(obj.getJSONArray(INGREDIENTS_KEY), id);
+                        List<Step> steps = getStepsFromJsonObject(obj.getJSONArray(STEPS_KEY), id);
+                        int servings = obj.getInt(SERVINGS_KEY);
 //                    String imageUrl = obj.getString(IMAGE_KEY); // Always empty - can't support until valid data given
 
-                    recipes.add(new Recipe(id, name, ingredients, steps, servings, null));
+                        recipes.add(new Recipe(id, name, ingredients, steps, servings, null));
 
 
-                } catch (JSONException e) {
-                    Log.e(TAG, "Error parsing recipe " + i);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Error parsing recipe " + i);
+                    }
                 }
-            }
 
-        } catch (JSONException e) {
-            Log.e(TAG, "Unable to parse json");
+            } catch (JSONException e) {
+                Log.e(TAG, "Unable to parse json");
+            }
         }
 
         return recipes;
