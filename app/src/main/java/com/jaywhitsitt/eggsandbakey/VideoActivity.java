@@ -54,6 +54,12 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        mPlayer.setPlayWhenReady(false);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mPlayer.release();
