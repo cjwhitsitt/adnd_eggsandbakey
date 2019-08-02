@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.jaywhitsitt.eggsandbakey.data.Ingredient;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 
 /**
@@ -62,40 +64,55 @@ public class StepDetailFragment extends Fragment {
 
         String title = "Step Detail";
 
-        if (getArguments().containsKey(ARG_STEP)) {
+        Bundle args = getArguments();
+        if (args == null) {
+            throw new InvalidParameterException("No arguments provided for detail display");
+
+        } else if (args.containsKey(ARG_STEP)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mStep = (Step) getArguments().getSerializable(ARG_STEP);
-            title = mStep.shortDescription;
+            mStep = (Step) args.getSerializable(ARG_STEP);
+            if (mStep != null) {
+                title = mStep.shortDescription;
+            }
 
-        } else if (getArguments().containsKey(ARG_INGREDIENTS)) {
-            mIngredients = (List<Ingredient>) getArguments().getSerializable(ARG_INGREDIENTS);
+        } else if (args.containsKey(ARG_INGREDIENTS)) {
+            mIngredients = (List<Ingredient>) args.getSerializable(ARG_INGREDIENTS);
             title = "Recipe Ingredients";
         }
 
         Activity activity = this.getActivity();
-        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-        if (appBarLayout != null) {
-            appBarLayout.setTitle(title);
+        if (activity != null) {
+            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            if (appBarLayout != null) {
+                appBarLayout.setTitle(title);
+            }
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.step_detail, container, false);
         TextView textView = rootView.findViewById(R.id.step_detail);
-        String text = "";
+        String text;
 
-        // Show the dummy content as text in a TextView.
         if (mStep != null) {
             text = mStep.description;
+
         } else if (mIngredients != null) {
-            for (Ingredient ingredient: mIngredients) {
-                // TODO: localize
-                text += String.valueOf(ingredient.quantity) + " " + ingredient.unit + " of " + ingredient.name + "\n";
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < mIngredients.size() - 1; i++) {
+                Ingredient ingredient = mIngredients.get(i);
+                builder.append(getString(R.string.ingredient_format, ingredient.quantity, ingredient.unit, ingredient.name));
+                if (i < mIngredients.size() - 2) {
+                    builder.append("\n");
+                }
             }
+            text = builder.toString();
+        } else {
+            throw new InvalidParameterException("No data provided to display");
         }
         textView.setText(text);
 
