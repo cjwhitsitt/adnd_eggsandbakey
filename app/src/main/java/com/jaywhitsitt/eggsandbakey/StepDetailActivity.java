@@ -74,21 +74,8 @@ public class StepDetailActivity extends AppCompatActivity {
                     .commit();
         }
 
-        // TODO: use common code
         View playFab = findViewById(R.id.fab_play);
         PlaybackUtils.setupPlayFab(this, step, playFab);
-
-        View nextFab = findViewById(R.id.fab_next);
-        if (isLast) {
-            nextFab.setVisibility(View.GONE);
-        } else {
-            nextFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Snackbar.make(v, "TODO: Next step", Snackbar.LENGTH_LONG).show();
-                }
-            });
-        }
     }
 
     @Override
