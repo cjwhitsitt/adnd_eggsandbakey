@@ -1,8 +1,10 @@
 package com.jaywhitsitt.eggsandbakey;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.test.espresso.IdlingResource;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,6 +15,7 @@ import android.widget.GridView;
 import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
 import com.jaywhitsitt.eggsandbakey.data.Recipe;
 import com.jaywhitsitt.eggsandbakey.data.Step;
+import com.jaywhitsitt.eggsandbakey.testhelpers.RecipeFetchIdlingResource;
 import com.jaywhitsitt.eggsandbakey.utils.NetworkUtils;
 import com.jaywhitsitt.eggsandbakey.utils.RecipeUtils;
 
@@ -28,6 +31,15 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
     GridView mGridView;
     RecipesAdapter mAdapter;
     AppDatabase mDb;
+
+    private RecipeFetchIdlingResource mIdlingResource;
+    @VisibleForTesting
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new RecipeFetchIdlingResource();
+        }
+        return mIdlingResource;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +64,20 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         }
     }
 
-    private static class RecipesFetchTask extends AsyncTask<Void, Void, List<Recipe>> {
+    private class RecipesFetchTask extends AsyncTask<Void, Void, List<Recipe>> {
 
-        private static final String TAG = RecipesFetchTask.class.getSimpleName();
+        private final String TAG = RecipesFetchTask.class.getSimpleName();
         private AppDatabase mDb;
 
         public RecipesFetchTask(AppDatabase db) {
             mDb = db;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            getIdlingResource();
+            RecipesActivity.this.mIdlingResource.setIdleState(false);
         }
 
         @Override
@@ -71,20 +90,20 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         protected void onPostExecute(final List<Recipe> recipes) {
             super.onPostExecute(recipes);
 
-            if (recipes == null) {
-                Log.i(TAG, "No data received. Falling back to cached data.");
-                return;
-            }
-
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    mDb.clearAllTables();
-                    mDb.recipeDao().insertAll(recipes);
-                    for (Recipe recipe: recipes) {
-                        mDb.stepDao().addSteps(recipe.steps);
-                        mDb.ingredientDao().addIngredients(recipe.ingredients);
+                    if (recipes == null) {
+                        Log.i(TAG, "No data received. Falling back to cached data.");
+                    } else {
+                        mDb.clearAllTables();
+                        mDb.recipeDao().insertAll(recipes);
+                        for (Recipe recipe : recipes) {
+                            mDb.stepDao().addSteps(recipe.steps);
+                            mDb.ingredientDao().addIngredients(recipe.ingredients);
+                        }
                     }
+                    RecipesActivity.this.mIdlingResource.setIdleState(true);
                 }
             });
             thread.start();
