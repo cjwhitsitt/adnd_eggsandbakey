@@ -124,8 +124,7 @@ public class StepDetailFragment extends Fragment {
             text = mStep.description;
 
         } else {
-            // TODO: localize
-            text = "Loading ingredients...";
+            text = getString(R.string.loading_ingredients);
         }
         textView.setText(text);
 

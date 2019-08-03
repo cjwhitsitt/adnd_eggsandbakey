@@ -137,8 +137,6 @@ public class StepListActivity extends AppCompatActivity implements StepAdapter.S
             View playFab = findViewById(R.id.fab_play);
             PlaybackUtils.setupPlayFab(this, step, playFab);
 
-            // TODO: Highlight selected item
-
         } else {
             Context context = view.getContext();
             Intent intent = new Intent(context, StepDetailActivity.class);

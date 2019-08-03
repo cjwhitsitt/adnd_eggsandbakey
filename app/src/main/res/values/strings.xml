@@ -4,6 +4,7 @@
     <string name="title_step_list">Steps</string>
     <string name="title_step_detail">Step Detail</string>
 
+    <string name="loading_ingredients">Loading ingredients...</string>
     <string name="ingredient_format">
         <xliff:g id="ingredient_count">%1$d</xliff:g> <xliff:g id="ingredient_unit">%2$s</xliff:g> of <xliff:g id="ingredient_name">%3$s</xliff:g>
     </string>
