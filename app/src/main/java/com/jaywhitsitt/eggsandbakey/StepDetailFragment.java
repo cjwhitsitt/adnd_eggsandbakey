@@ -7,6 +7,8 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
 import com.jaywhitsitt.eggsandbakey.data.Ingredient;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 
@@ -37,18 +40,19 @@ public class StepDetailFragment extends Fragment {
      */
     public static final String ARG_IS_LAST = "isLast";
     /**
-     * The fragment argument representing the list of ingredients for the recipe.
+     * The fragment argument representing the id of the recipe to display.
      */
-    public static final String ARG_INGREDIENTS = "ingredients";
+    public static final String ARG_RECIPE_ID = "recipeId";
+    /**
+     * A value that can be given when no recipe is available although the view was loaded.
+     * Denotes an error.
+     */
+    public static final int NO_RECIPE_AVAILABLE = -1;
 
     /**
      * The dummy content this fragment is presenting.
      */
     private Step mStep;
-    /**
-     * The list of ingredients to display.
-     */
-    private List<Ingredient> mIngredients;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,7 +72,7 @@ public class StepDetailFragment extends Fragment {
         if (args == null) {
             throw new InvalidParameterException("No arguments provided for detail display");
 
-        } else if (args.containsKey(ARG_STEP)) {
+        } else if (args.containsKey(ARG_STEP) && args.get(ARG_STEP) != null) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
@@ -77,9 +81,27 @@ public class StepDetailFragment extends Fragment {
                 title = mStep.shortDescription;
             }
 
-        } else if (args.containsKey(ARG_INGREDIENTS)) {
-            mIngredients = (List<Ingredient>) args.getSerializable(ARG_INGREDIENTS);
+        } else if (args.containsKey(ARG_RECIPE_ID)) {
             title = "Recipe Ingredients";
+            AppDatabase.getInstance().ingredientDao().getIngredientsForRecipe(args.getInt(ARG_RECIPE_ID))
+                .observe(this, new Observer<List<Ingredient>>() {
+                    @Override
+                    public void onChanged(List<Ingredient> ingredients) {
+                        StringBuilder builder = new StringBuilder();
+                        for (int i = 0; i < ingredients.size() - 1; i++) {
+                            Ingredient ingredient = ingredients.get(i);
+                            builder.append(getString(R.string.ingredient_format, ingredient.quantity, ingredient.unit, ingredient.name));
+                            if (i < ingredients.size() - 2) {
+                                builder.append("\n");
+                            }
+                        }
+                        TextView textView = StepDetailFragment.this.getView().findViewById(R.id.step_detail);
+                        textView.setText(builder.toString());
+                    }
+                });
+
+        } else {
+            throw new InvalidParameterException("Must include either ARG_STEP or ARG_RECIPE_ID");
         }
 
         Activity activity = this.getActivity();
@@ -101,19 +123,9 @@ public class StepDetailFragment extends Fragment {
         if (mStep != null) {
             text = mStep.description;
 
-        } else if (mIngredients != null) {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < mIngredients.size() - 1; i++) {
-                Ingredient ingredient = mIngredients.get(i);
-                builder.append(getString(R.string.ingredient_format, ingredient.quantity, ingredient.unit, ingredient.name));
-                if (i < mIngredients.size() - 2) {
-                    builder.append("\n");
-                }
-            }
-            text = builder.toString();
         } else {
             // TODO: localize
-            text = "Select a step on the left";
+            text = "Loading ingredients...";
         }
         textView.setText(text);
 

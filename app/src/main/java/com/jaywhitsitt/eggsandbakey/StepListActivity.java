@@ -76,13 +76,13 @@ public class StepListActivity extends AppCompatActivity implements StepAdapter.S
 
         RecyclerView recyclerView = findViewById(R.id.step_list);
         assert recyclerView != null;
-        mAdapter = new StepAdapter(this);
+        mAdapter = new StepAdapter(this, mTwoPane);
         recyclerView.setAdapter(mAdapter);
 
         mDB = AppDatabase.getInstance();
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_RECIPE_ID)) {
-            int recipeId = intent.getIntExtra(EXTRA_RECIPE_ID, -1);
+            int recipeId = intent.getIntExtra(EXTRA_RECIPE_ID, StepDetailFragment.NO_RECIPE_AVAILABLE);
             mDB.recipeDao().getRecipeById(recipeId).observe(this, new Observer<Recipe>() {
                 @Override
                 public void onChanged(Recipe recipe) {
@@ -122,7 +122,10 @@ public class StepListActivity extends AppCompatActivity implements StepAdapter.S
     public void showStep(Step step, View view) {
         Bundle extras = new Bundle();
         extras.putSerializable(StepDetailFragment.ARG_STEP, step);
-        extras.putBoolean(StepDetailFragment.ARG_IS_LAST, step.stepId >= mCurrentRecipe.steps.size() - 1);
+        extras.putInt(StepDetailFragment.ARG_RECIPE_ID, mCurrentRecipe.id);
+        if (step != null) {
+            extras.putBoolean(StepDetailFragment.ARG_IS_LAST, step.stepId >= mCurrentRecipe.steps.size() - 1);
+        }
 
         if (mTwoPane) {
             StepDetailFragment fragment = new StepDetailFragment();
@@ -146,23 +149,7 @@ public class StepListActivity extends AppCompatActivity implements StepAdapter.S
 
     @Override
     public void showIngredients(View view) {
-        Bundle extras = new Bundle();
-        extras.putSerializable(StepDetailFragment.ARG_INGREDIENTS, (ArrayList<Ingredient>) mCurrentRecipe.ingredients);
-
-        if (mTwoPane) {
-            StepDetailFragment fragment = new StepDetailFragment();
-            fragment.setArguments(extras);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.step_detail_container, fragment)
-                    .commit();
-            findViewById(R.id.fab_play).setVisibility(View.GONE);
-
-        } else {
-            Context context = view.getContext();
-            Intent intent = new Intent(context, StepDetailActivity.class);
-            intent.putExtras(extras);
-            context.startActivity(intent);
-        }
+        showStep(null, view);
     }
 
 }

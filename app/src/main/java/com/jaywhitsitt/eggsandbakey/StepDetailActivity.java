@@ -44,8 +44,7 @@ public class StepDetailActivity extends AppCompatActivity {
 
         boolean isLast = getIntent().getBooleanExtra(StepDetailFragment.ARG_IS_LAST, false);
         Step step = (Step) getIntent().getSerializableExtra(StepDetailFragment.ARG_STEP);
-        @SuppressWarnings("unchecked")
-        List<Ingredient> ingredients = (List<Ingredient>) getIntent().getSerializableExtra(StepDetailFragment.ARG_INGREDIENTS);
+        int recipeId = getIntent().getIntExtra(StepDetailFragment.ARG_RECIPE_ID, StepDetailFragment.NO_RECIPE_AVAILABLE);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -61,11 +60,9 @@ public class StepDetailActivity extends AppCompatActivity {
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putBoolean(StepDetailFragment.ARG_IS_LAST, isLast);
+            arguments.putInt(StepDetailFragment.ARG_RECIPE_ID, recipeId);
             if (step != null) {
                 arguments.putSerializable(StepDetailFragment.ARG_STEP, step);
-            }
-            if (ingredients != null) {
-                arguments.putSerializable(StepDetailFragment.ARG_INGREDIENTS, (ArrayList<Ingredient>) ingredients);
             }
             StepDetailFragment fragment = new StepDetailFragment();
             fragment.setArguments(arguments);

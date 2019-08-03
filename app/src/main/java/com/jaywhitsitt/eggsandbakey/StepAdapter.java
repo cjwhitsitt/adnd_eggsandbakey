@@ -24,11 +24,16 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
         void showIngredients(View view);
     }
 
-    private final ShowDetailListener mShowListener;
-    private List<Step> mSteps;
+    private static final int POSITION_NOT_SELECTED = -1;
 
-    public StepAdapter(ShowDetailListener listener) {
+    private final ShowDetailListener mShowListener;
+    private final boolean mTwoPane;
+    private List<Step> mSteps;
+    private int mSelectedPosition = POSITION_NOT_SELECTED;
+
+    public StepAdapter(ShowDetailListener listener, boolean twoPane) {
         mShowListener = listener;
+        mTwoPane = twoPane;
     }
 
     public void setSteps(List<Step> steps) {
@@ -72,6 +77,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mSelectedPosition = position;
                 if (position == 0) {
                     mShowListener.showIngredients(v);
                 } else {
@@ -79,6 +85,10 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
                 }
             }
         });
+
+        if (mTwoPane && mSelectedPosition == POSITION_NOT_SELECTED && position == 0) {
+            holder.itemView.performClick();
+        }
     }
 
     class StepAdapterViewHolder extends RecyclerView.ViewHolder {
