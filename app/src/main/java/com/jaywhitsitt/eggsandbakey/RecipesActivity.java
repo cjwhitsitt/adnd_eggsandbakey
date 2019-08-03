@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.GridView;
 
 import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
@@ -47,11 +48,18 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         });
 
         if (savedInstanceState == null) {
-            new RecipesFetchTask().execute();
+            new RecipesFetchTask(mDb).execute();
         }
     }
 
-    private class RecipesFetchTask extends AsyncTask<Void, Void, List<Recipe>> {
+    private static class RecipesFetchTask extends AsyncTask<Void, Void, List<Recipe>> {
+
+        private static final String TAG = RecipesFetchTask.class.getSimpleName();
+        private AppDatabase mDb;
+
+        public RecipesFetchTask(AppDatabase db) {
+            mDb = db;
+        }
 
         @Override
         protected List<Recipe> doInBackground(Void... voids) {
@@ -62,6 +70,11 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         @Override
         protected void onPostExecute(final List<Recipe> recipes) {
             super.onPostExecute(recipes);
+
+            if (recipes == null) {
+                Log.i(TAG, "No data received. Falling back to cached data.");
+                return;
+            }
 
             Thread thread = new Thread(new Runnable() {
                 @Override

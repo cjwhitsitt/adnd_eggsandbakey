@@ -112,7 +112,8 @@ public class StepDetailFragment extends Fragment {
             }
             text = builder.toString();
         } else {
-            throw new InvalidParameterException("No data provided to display");
+            // TODO: localize
+            text = "Select a step on the left";
         }
         textView.setText(text);
 

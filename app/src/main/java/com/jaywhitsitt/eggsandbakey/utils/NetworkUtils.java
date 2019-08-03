@@ -18,7 +18,7 @@ public class NetworkUtils {
         try {
             return getResponseFromUrl(new URL(jsonUrlString));
         } catch (IOException e) {
-            Log.e(TAG, "Unable to get response");
+            Log.w(TAG, "Unable to get response");
             return null;
         }
     }
