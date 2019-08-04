@@ -41,6 +41,7 @@ public class IngredientRemoteViewsFactory implements RemoteViewsService.RemoteVi
             public void onChanged(List<Ingredient> ingredients) {
                 AppWidgetManager manager = AppWidgetManager.getInstance(mContext);
                 manager.notifyAppWidgetViewDataChanged(mWidgetId, R.id.list_widget_ingredients);
+                IngredientsWidget.updateAppWidget(mContext, manager, mWidgetId, false);
             }
         };
         mData.observeForever(mObserver);

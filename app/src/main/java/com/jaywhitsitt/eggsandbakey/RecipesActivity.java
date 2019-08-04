@@ -139,7 +139,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             WidgetPreferences.saveRecipeIdPref(this, mAppWidgetId, recipe.id);
 
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-            IngredientsWidget.updateAppWidget(this, appWidgetManager, mAppWidgetId);
+            IngredientsWidget.updateAppWidget(this, appWidgetManager, mAppWidgetId, true);
 
             Intent resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);

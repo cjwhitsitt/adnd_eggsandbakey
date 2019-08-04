@@ -24,20 +24,20 @@ import java.util.List;
 public class IngredientsWidget extends AppWidgetProvider {
 
     public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+                                int appWidgetId, boolean loading) {
         int recipeId = WidgetPreferences.getRecipeIdPref(context, appWidgetId);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingredients_list);
 
         boolean valid = recipeId != WidgetPreferences.NO_PREF_VALUE;
         views.setViewVisibility(R.id.tv_widget_not_setup, valid ? View.GONE : View.VISIBLE);
-        views.setViewVisibility(R.id.list_widget_ingredients, valid ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.list_widget_ingredients, valid && !loading ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.tv_widget_loading, loading ? View.VISIBLE : View.GONE);
 
-        if (valid) {
+        if (valid && loading) {
             Intent intent = new Intent(context, IngredientsWidgetService.class);
             intent.putExtra(IngredientsWidgetService.EXTRA_RECIPE_ID, recipeId);
             intent.putExtra(IngredientsWidgetService.EXTRA_WIDGET_ID, appWidgetId);
             views.setRemoteAdapter(R.id.list_widget_ingredients, intent);
-
         }
 
         // Instruct the widget manager to update the widget
@@ -48,7 +48,7 @@ public class IngredientsWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            updateAppWidget(context, appWidgetManager, appWidgetId, true);
         }
     }
 

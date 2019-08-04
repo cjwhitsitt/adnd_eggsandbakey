@@ -44,15 +44,7 @@ public class IngredientsWidgetService extends RemoteViewsService {
             return null;
         }
 
-        IngredientRemoteViewsFactory factory = new IngredientRemoteViewsFactory(getApplicationContext(), recipeId, widgetId);
-        List<Ingredient> ingredients = AppDatabase.getInstance(getApplicationContext()).ingredientDao().getIngredientsForRecipe(recipeId).getValue();
-        if (intent.hasExtra(EXTRA_INGREDIENTS) && intent.getSerializableExtra(EXTRA_INGREDIENTS) != null) {
-
-        } else {
-
-        }
-
-        return factory;
+        return new IngredientRemoteViewsFactory(getApplicationContext(), recipeId, widgetId);
     }
 
 }
