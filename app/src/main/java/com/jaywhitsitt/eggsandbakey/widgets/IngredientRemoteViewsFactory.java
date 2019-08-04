@@ -1,6 +1,8 @@
 package com.jaywhitsitt.eggsandbakey.widgets;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
+import android.os.Handler;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -18,25 +20,50 @@ import java.util.List;
 public class IngredientRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     public static final int INVALID_RECIPE_ID = -1;
-    private List<Ingredient> mData = new ArrayList<>();
+
     private Context mContext;
+    private int mRecipeId;
+    private int mWidgetId;
+    private LiveData<List<Ingredient>> mData;
+    private Observer<List<Ingredient>> mObserver;
 
-    public IngredientRemoteViewsFactory(Context context) {
+    public IngredientRemoteViewsFactory(Context context, int recipeId, int widgetId) {
         mContext = context;
-    }
-
-    void setData(List<Ingredient> ingredients) {
-        mData = ingredients;
+        mRecipeId = recipeId;
+        mWidgetId = widgetId;
     }
 
     @Override
     public void onCreate() {
-
+        mData = AppDatabase.getInstance(mContext).ingredientDao().getIngredientsForRecipe(mRecipeId);
+        mObserver = new Observer<List<Ingredient>>() {
+            @Override
+            public void onChanged(List<Ingredient> ingredients) {
+                AppWidgetManager manager = AppWidgetManager.getInstance(mContext);
+                manager.notifyAppWidgetViewDataChanged(mWidgetId, R.id.list_widget_ingredients);
+            }
+        };
+        mData.observeForever(mObserver);
     }
 
     @Override
     public void onDestroy() {
+        if (mData != null && mObserver != null) {
+            // Get a handler that can be used to post to the main thread
+            Handler mainHandler = new Handler(mContext.getMainLooper());
 
+            Runnable myRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    mData.removeObserver(mObserver);
+                }
+            };
+            mainHandler.post(myRunnable);
+        }
+    }
+
+    private List<Ingredient> getIngredients() {
+        return mData.getValue();
     }
 
     @Override
@@ -45,9 +72,7 @@ public class IngredientRemoteViewsFactory implements RemoteViewsService.RemoteVi
     }
 
     @Override
-    public void onDataSetChanged() {
-
-    }
+    public void onDataSetChanged() {}
 
     @Override
     public int getViewTypeCount() {
@@ -56,7 +81,7 @@ public class IngredientRemoteViewsFactory implements RemoteViewsService.RemoteVi
 
     @Override
     public int getCount() {
-        return 0;
+        return getIngredients() == null ? 0 : getIngredients().size();
     }
 
     @Override
@@ -67,11 +92,11 @@ public class IngredientRemoteViewsFactory implements RemoteViewsService.RemoteVi
 
     @Override
     public long getItemId(int position) {
-        return mData.get(position).id;
+        return getIngredients().get(position).id;
     }
 
     @Override
     public boolean hasStableIds() {
-        return false;
+        return true;
     }
 }
