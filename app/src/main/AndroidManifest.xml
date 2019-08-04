@@ -12,11 +12,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".VideoActivity"
-            android:theme="@style/AppTheme.FullScreen"
-            android:screenOrientation="landscape"
+        <receiver android:name=".widgets.IngredientsWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/ingredients_widget_info" />
+        </receiver>
+
+        <activity android:name=".widgets.IngredientsWidgetConfigureActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".VideoActivity"
             android:configChanges="orientation|keyboardHidden"
-            ></activity>
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name=".StepListActivity"
             android:label="@string/title_step_list"
