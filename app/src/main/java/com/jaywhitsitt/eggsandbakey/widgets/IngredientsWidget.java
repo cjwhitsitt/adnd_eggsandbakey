@@ -2,13 +2,18 @@ package com.jaywhitsitt.eggsandbakey.widgets;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 
 import com.jaywhitsitt.eggsandbakey.R;
+import com.jaywhitsitt.eggsandbakey.data.AppDatabase;
 import com.jaywhitsitt.eggsandbakey.data.Ingredient;
+
+import java.util.List;
 
 /**
  * Implementation of App Widget functionality.
@@ -20,15 +25,17 @@ public class IngredientsWidget extends AppWidgetProvider {
                                 int appWidgetId) {
         int recipeId = WidgetPreferences.getRecipeIdPref(context, appWidgetId);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingredients_list);
-        int listViewId = R.id.list_widget_ingredients;
-        int errorViewId = R.id.tv_widget_not_setup;
 
-        boolean valid = false; // TODO: recipeId != AppWidgetManager.INVALID_APPWIDGET_ID;
-        views.setViewVisibility(R.id.list_widget_ingredients, valid ? View.VISIBLE : View.GONE);
+        boolean valid = recipeId != WidgetPreferences.NO_PREF_VALUE;
         views.setViewVisibility(R.id.tv_widget_not_setup, valid ? View.GONE : View.VISIBLE);
 
         if (valid) {
-            // TODO: views.setRemoteAdapter(R.id.list_widget_ingredients, intent);
+            Intent intent = new Intent(context, IngredientsWidgetService.class);
+            intent.putExtra(IngredientsWidgetService.EXTRA_RECIPE_ID, recipeId);
+            intent.putExtra(IngredientsWidgetService.EXTRA_WIDGET_ID, appWidgetId);
+            views.setRemoteAdapter(R.id.list_widget_ingredients, intent);
+        } else {
+            views.setViewVisibility(R.id.list_widget_ingredients, View.GONE);
         }
 
         // Instruct the widget manager to update the widget
@@ -51,4 +58,21 @@ public class IngredientsWidget extends AppWidgetProvider {
         }
     }
 
+    public static void updateAllInstances(Context context) {
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        int[] ids = manager.getAppWidgetIds(new ComponentName(context, IngredientsWidget.class));
+        Intent intent = new Intent();
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        context.sendBroadcast(intent);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent.getAction() == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
+            AppWidgetManager manager = AppWidgetManager.getInstance(context);
+            int[] ids = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+            onUpdate(context, manager, ids);
+        }
+    }
 }

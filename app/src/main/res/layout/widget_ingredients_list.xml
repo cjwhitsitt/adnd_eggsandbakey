@@ -1,15 +1,28 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent" >
 
     <ListView
         android:id="@+id/list_widget_ingredients"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/widget_margin" />
+        android:padding="@dimen/widget_margin"
+        android:visibility="gone" />
 
     <!-- TODO: localize text -->
     <TextView
         android:id="@+id/tv_widget_not_setup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:text="Please remove and readd this widget"
         android:visibility="gone" />
 
-</merge>
+    <TextView
+        android:id="@+id/tv_widget_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Loading..." />
+
+</FrameLayout>

@@ -64,7 +64,6 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             }
         });
 
-        // TODO: if widget configuration, don't fetch
         Intent intent = getIntent();
         if (intent.hasExtra(AppWidgetManager.EXTRA_APPWIDGET_ID)) {
             mAppWidgetId = intent.getIntExtra(
@@ -118,6 +117,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
                             mDb.stepDao().addSteps(recipe.steps);
                             mDb.ingredientDao().addIngredients(recipe.ingredients);
                         }
+                        IngredientsWidget.updateAllInstances(getApplicationContext());
                     }
                     RecipesActivity.this.mIdlingResource.setIdleState(true);
                 }
@@ -139,7 +139,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             WidgetPreferences.saveRecipeIdPref(this, mAppWidgetId, recipe.id);
 
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-            IngredientsWidget.updateAppWidget(this, appWidgetManager, mAppWidgetId);
+            IngredientsWidget.updateAppWidget(this, appWidgetManager, mAppWidgetId); // TODO: use broadcast
 
             Intent resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);

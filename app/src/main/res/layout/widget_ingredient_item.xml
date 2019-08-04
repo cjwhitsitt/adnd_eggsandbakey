@@ -8,16 +8,19 @@
     <TextView
         android:id="@+id/tv_ingredient_count"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Count" />
 
     <TextView
         android:id="@+id/tv_ingredient_unit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Unit" />
 
     <TextView
         android:id="@+id/tv_ingredient_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Name" />
 
 </LinearLayout>

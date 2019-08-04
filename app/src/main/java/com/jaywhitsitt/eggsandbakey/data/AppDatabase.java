@@ -17,12 +17,16 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public static AppDatabase getInstance() {
         if (singleton == null) {
-            singleton = Room.databaseBuilder(
-                    MyApplication.getInstance(),
-                    AppDatabase.class,
-                    "RecipeDatabase").build();
+            singleton = getInstance(MyApplication.getInstance());
         }
         return singleton;
+    }
+
+    public static AppDatabase getInstance(Context context) {
+        return Room.databaseBuilder(
+                context,
+                AppDatabase.class,
+                "RecipeDatabase").build();
     }
 
     public abstract RecipeDao recipeDao();
