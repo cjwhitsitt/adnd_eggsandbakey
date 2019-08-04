@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.test.espresso.IdlingResource;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import com.jaywhitsitt.eggsandbakey.data.Step;
 import com.jaywhitsitt.eggsandbakey.testhelpers.RecipeFetchIdlingResource;
 import com.jaywhitsitt.eggsandbakey.utils.NetworkUtils;
 import com.jaywhitsitt.eggsandbakey.utils.RecipeUtils;
+import com.jaywhitsitt.eggsandbakey.widgets.IngredientsWidget;
+import com.jaywhitsitt.eggsandbakey.widgets.WidgetPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,8 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
     GridView mGridView;
     RecipesAdapter mAdapter;
     AppDatabase mDb;
+
+    private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
     private RecipeFetchIdlingResource mIdlingResource;
     @VisibleForTesting
@@ -59,8 +64,19 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             }
         });
 
-        if (savedInstanceState == null) {
+        // TODO: if widget configuration, don't fetch
+        Intent intent = getIntent();
+        if (intent.hasExtra(AppWidgetManager.EXTRA_APPWIDGET_ID)) {
+            mAppWidgetId = intent.getIntExtra(
+                    AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+        }
+
+        if (savedInstanceState == null && mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
             new RecipesFetchTask(mDb).execute();
+        } else {
+            setResult(RESULT_CANCELED);
+            setTitle("Choose a Recipe"); // TODO: localize
         }
     }
 
@@ -115,8 +131,20 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
     public void onClickRecipe(int position) {
         Recipe recipe = mAdapter.getItem(position);
 
-        Intent intent = new Intent(this, StepListActivity.class);
-        intent.putExtra(StepListActivity.EXTRA_RECIPE_ID, recipe.id);
-        startActivity(intent);
+        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            Intent intent = new Intent(this, StepListActivity.class);
+            intent.putExtra(StepListActivity.EXTRA_RECIPE_ID, recipe.id);
+            startActivity(intent);
+        } else {
+            WidgetPreferences.saveRecipeIdPref(this, mAppWidgetId, recipe.id);
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+            IngredientsWidget.updateAppWidget(this, appWidgetManager, mAppWidgetId);
+
+            Intent resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+            setResult(RESULT_OK, resultValue);
+            finish();
+        }
     }
 }

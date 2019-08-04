@@ -3,23 +3,33 @@ package com.jaywhitsitt.eggsandbakey.widgets;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.view.View;
+import android.widget.ListView;
 import android.widget.RemoteViews;
 
 import com.jaywhitsitt.eggsandbakey.R;
+import com.jaywhitsitt.eggsandbakey.data.Ingredient;
 
 /**
  * Implementation of App Widget functionality.
- * App Widget Configuration implemented in {@link IngredientsWidgetConfigureActivity IngredientsWidgetConfigureActivity}
+ * App Widget Configuration implemented in {@link com.jaywhitsitt.eggsandbakey.RecipesActivity RecipesActivity}
  */
 public class IngredientsWidget extends AppWidgetProvider {
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+    public static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
+        int recipeId = WidgetPreferences.getRecipeIdPref(context, appWidgetId);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_ingredients_list);
+        int listViewId = R.id.list_widget_ingredients;
+        int errorViewId = R.id.tv_widget_not_setup;
 
-        CharSequence widgetText = IngredientsWidgetConfigureActivity.loadTitlePref(context, appWidgetId);
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.ingredients_widget);
-        views.setTextViewText(R.id.appwidget_text, widgetText);
+        boolean valid = false; // TODO: recipeId != AppWidgetManager.INVALID_APPWIDGET_ID;
+        views.setViewVisibility(R.id.list_widget_ingredients, valid ? View.VISIBLE : View.GONE);
+        views.setViewVisibility(R.id.tv_widget_not_setup, valid ? View.GONE : View.VISIBLE);
+
+        if (valid) {
+            // TODO: views.setRemoteAdapter(R.id.list_widget_ingredients, intent);
+        }
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -37,9 +47,8 @@ public class IngredientsWidget extends AppWidgetProvider {
     public void onDeleted(Context context, int[] appWidgetIds) {
         // When the user deletes the widget, delete the preference associated with it.
         for (int appWidgetId : appWidgetIds) {
-            IngredientsWidgetConfigureActivity.deleteTitlePref(context, appWidgetId);
+            WidgetPreferences.deleteRecipeIdPref(context, appWidgetId);
         }
     }
 
 }
-

@@ -1,0 +1,15 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListView
+        android:id="@+id/list_widget_ingredients"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/widget_margin" />
+
+    <!-- TODO: localize text -->
+    <TextView
+        android:id="@+id/tv_widget_not_setup"
+        android:text="Please remove and readd this widget"
+        android:visibility="gone" />
+
+</merge>
