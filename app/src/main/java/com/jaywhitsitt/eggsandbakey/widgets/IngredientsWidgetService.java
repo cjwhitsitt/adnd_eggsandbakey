@@ -22,7 +22,6 @@ public class IngredientsWidgetService extends RemoteViewsService {
 
     public static final String EXTRA_RECIPE_ID = "recipeId";
     public static final String EXTRA_WIDGET_ID = "widgetId";
-    public static final String EXTRA_INGREDIENTS = "ingredients";
 
     public IngredientsWidgetService() {}
 
