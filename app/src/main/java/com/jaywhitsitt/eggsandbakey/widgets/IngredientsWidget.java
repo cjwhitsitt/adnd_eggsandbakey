@@ -33,7 +33,7 @@ public class IngredientsWidget extends AppWidgetProvider {
         views.setViewVisibility(R.id.list_widget_ingredients, valid && !loading ? View.VISIBLE : View.GONE);
         views.setViewVisibility(R.id.tv_widget_loading, loading ? View.VISIBLE : View.GONE);
 
-        if (valid && loading) {
+        if (valid) {
             Intent intent = new Intent(context, IngredientsWidgetService.class);
             intent.putExtra(IngredientsWidgetService.EXTRA_RECIPE_ID, recipeId);
             intent.putExtra(IngredientsWidgetService.EXTRA_WIDGET_ID, appWidgetId);
