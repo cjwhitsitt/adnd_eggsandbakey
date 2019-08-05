@@ -75,7 +75,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             new RecipesFetchTask(mDb).execute();
         } else {
             setResult(RESULT_CANCELED);
-            setTitle("Choose a Recipe"); // TODO: localize
+            setTitle(R.string.help_text_choose_recipe);
         }
     }
 

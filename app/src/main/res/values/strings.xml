@@ -11,4 +11,8 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
+    <string name="recipe_thumbnail_description">Recipe thumbnail</string>
+    <string name="help_text_choose_recipe">Choose a Recipe</string>
+    <string name="help_text_please_remove_and_readd_this_widget">Please remove and readd this widget</string>
+    <string name="help_text_loading">Loading...</string>
 </resources>
