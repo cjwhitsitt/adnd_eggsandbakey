@@ -68,6 +68,9 @@ public class RecipesAdapter extends BaseAdapter {
         TextView nameTextView = convertView.findViewById(R.id.tv_recipe_name);
         nameTextView.setText(recipe.name);
 
+        TextView servingsTextView = convertView.findViewById(R.id.tv_recipe_servings);
+        servingsTextView.setText(String.valueOf(recipe.servings));
+
         ImageView imageView = convertView.findViewById(R.id.iv_recipe_card);
         try {
             imageView.setImageURI(Uri.parse(recipe.imageUrlString));
