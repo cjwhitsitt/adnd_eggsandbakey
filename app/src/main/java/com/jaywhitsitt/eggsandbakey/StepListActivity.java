@@ -76,7 +76,7 @@ public class StepListActivity extends AppCompatActivity implements StepAdapter.S
 
         RecyclerView recyclerView = findViewById(R.id.step_list);
         assert recyclerView != null;
-        mAdapter = new StepAdapter(this, mTwoPane);
+        mAdapter = new StepAdapter(this, this, mTwoPane);
         recyclerView.setAdapter(mAdapter);
 
         mDB = AppDatabase.getInstance();

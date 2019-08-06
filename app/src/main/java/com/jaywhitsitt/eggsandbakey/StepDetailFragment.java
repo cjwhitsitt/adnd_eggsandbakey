@@ -82,7 +82,7 @@ public class StepDetailFragment extends Fragment {
             }
 
         } else if (args.containsKey(ARG_RECIPE_ID)) {
-            title = "Recipe Ingredients";
+            title = getResources().getString(R.string.title_recipe_ingredients);
             AppDatabase.getInstance().ingredientDao().getIngredientsForRecipe(args.getInt(ARG_RECIPE_ID))
                 .observe(this, new Observer<List<Ingredient>>() {
                     @Override

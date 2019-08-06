@@ -17,6 +17,9 @@ import com.jaywhitsitt.eggsandbakey.data.Step;
 import java.io.Serializable;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterViewHolder> {
 
     public interface ShowDetailListener {
@@ -26,12 +29,14 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
 
     private static final int POSITION_NOT_SELECTED = -1;
 
+    private final Context mContext;
     private final ShowDetailListener mShowListener;
     private final boolean mTwoPane;
     private List<Step> mSteps;
     private int mSelectedPosition = POSITION_NOT_SELECTED;
 
-    public StepAdapter(ShowDetailListener listener, boolean twoPane) {
+    public StepAdapter(Context context, ShowDetailListener listener, boolean twoPane) {
+        mContext = context;
         mShowListener = listener;
         mTwoPane = twoPane;
     }
@@ -62,7 +67,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
         String description;
         Serializable tag;
         if (position == 0) {
-            description = "Recipe Ingredients";
+            description = mContext.getString(R.string.title_recipe_ingredients);
             tag = null;
         } else {
             int index = position - 1;
@@ -93,13 +98,14 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
 
     class StepAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView mIdView;
-        final TextView mContentView;
+        @BindView(R.id.id_text)
+        TextView mIdView;
+        @BindView(R.id.content)
+        TextView mContentView;
 
         public StepAdapterViewHolder(@NonNull final View itemView) {
             super(itemView);
-            mIdView = (TextView) itemView.findViewById(R.id.id_text);
-            mContentView = (TextView) itemView.findViewById(R.id.content);
+            ButterKnife.bind(itemView);
         }
 
     }

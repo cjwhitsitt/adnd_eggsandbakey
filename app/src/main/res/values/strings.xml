@@ -15,4 +15,5 @@
     <string name="help_text_choose_recipe">Choose a Recipe</string>
     <string name="help_text_please_remove_and_readd_this_widget">Please remove and readd this widget</string>
     <string name="help_text_loading">Loading...</string>
+    <string name="title_recipe_ingredients">Recipe Ingredients</string>
 </resources>
