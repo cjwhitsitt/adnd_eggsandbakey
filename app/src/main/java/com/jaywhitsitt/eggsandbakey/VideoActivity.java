@@ -119,12 +119,6 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mPlayer.release();
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(OUT_STATE_PLAYING, mPlayer.getPlayWhenReady());
