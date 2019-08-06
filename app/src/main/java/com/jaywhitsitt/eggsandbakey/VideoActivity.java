@@ -49,14 +49,33 @@ public class VideoActivity extends AppCompatActivity {
                 Util.getUserAgent(this, getString(R.string.app_name)));
         MediaSource source = new ProgressiveMediaSource.Factory(factory)
                 .createMediaSource(Uri.parse(videoUrl));
-        mPlayer.prepare(source);
-        mPlayer.setPlayWhenReady(true);
+
+
+        if (savedInstanceState != null) {
+            mPlayer.setPlayWhenReady(savedInstanceState.getBoolean(OUT_STATE_PLAYING, true));
+            mPlayer.seekTo(savedInstanceState.getLong(OUT_STATE_CURRENT_POSITION, 0));
+            mPlayer.prepare(source, false, false);
+        } else {
+            mPlayer.setPlayWhenReady(true);
+            mPlayer.prepare(source);
+        }
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mPlayer.setPlayWhenReady(false);
+    }
+
+    private static final String OUT_STATE_PLAYING = "playing";
+    private static final String OUT_STATE_CURRENT_POSITION = "position";
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(OUT_STATE_PLAYING, mPlayer.getPlayWhenReady());
+        outState.putLong(OUT_STATE_CURRENT_POSITION, mPlayer.getCurrentPosition());
     }
 
     @Override
