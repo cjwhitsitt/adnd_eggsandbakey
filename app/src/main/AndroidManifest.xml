@@ -30,7 +30,6 @@
 
         <activity
             android:name=".VideoActivity"
-            android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
