@@ -1,8 +1,6 @@
 package com.jaywhitsitt.eggsandbakey;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jaywhitsitt.eggsandbakey.data.Recipe;
 import com.jaywhitsitt.eggsandbakey.data.Step;
 
 import java.io.Serializable;
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterViewHolder> {
 
@@ -98,14 +92,13 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepAdapterVie
 
     class StepAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.id_text)
         TextView mIdView;
-        @BindView(R.id.content)
         TextView mContentView;
 
         public StepAdapterViewHolder(@NonNull final View itemView) {
             super(itemView);
-            ButterKnife.bind(itemView);
+            mIdView = itemView.findViewById(R.id.id_text);
+            mContentView = itemView.findViewById(R.id.content);
         }
 
     }
