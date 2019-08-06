@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class NetworkUtils {
 
     final static private String TAG = NetworkUtils.class.getSimpleName();
-    final static private String jsonUrlString = "http://go.udacity.com/android-baking-app-json";
+    final static private String jsonUrlString = "https://go.udacity.com/android-baking-app-json";
 
     public static String recipesResponse() {
         try {
