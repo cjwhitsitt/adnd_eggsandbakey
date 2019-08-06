@@ -24,7 +24,15 @@ public class VideoActivity extends AppCompatActivity {
 
     public static final String EXTRA_VIDEO_URL = "videoUrl";
 
+    private static final String OUT_STATE_PLAYING = "playing";
+    private static final String OUT_STATE_CURRENT_POSITION = "position";
+
     private SimpleExoPlayer mPlayer;
+    private PlayerView mPlayerView;
+
+    private String mVideoUrl;
+    private boolean mSavedPlayingState = true;
+    private long mSavedPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,52 +43,91 @@ public class VideoActivity extends AppCompatActivity {
         if (!intent.hasExtra(EXTRA_VIDEO_URL)) {
             throw new InvalidParameterException("EXTRA_VIDEO_URL missing but required");
         }
-        String videoUrl = intent.getStringExtra(EXTRA_VIDEO_URL);
+        mVideoUrl = intent.getStringExtra(EXTRA_VIDEO_URL);
 
-        mPlayer = ExoPlayerFactory.newSimpleInstance(this);
-        PlayerView view = findViewById(R.id.player);
-        if (view == null) {
+        mPlayerView = findViewById(R.id.player);
+        if (mPlayerView == null) {
             throw new RuntimeException("Unable to find player view");
         }
-        view.setPlayer(mPlayer);
+
+        if (savedInstanceState != null) {
+            mSavedPlayingState = savedInstanceState.getBoolean(OUT_STATE_PLAYING, true);
+            mSavedPosition = savedInstanceState.getLong(OUT_STATE_CURRENT_POSITION, 0);
+        }
+    }
+
+    private void initializePlayer() {
+        if (mPlayer == null) {
+            mPlayer = ExoPlayerFactory.newSimpleInstance(this);
+            mPlayer.setPlayWhenReady(mSavedPlayingState);
+            mPlayerView.setPlayer(mPlayer);
+        }
+
+        boolean hasPosition = mSavedPosition > 0;
+        if (hasPosition) {
+            mPlayer.seekTo(mSavedPosition);
+        }
 
         DefaultDataSourceFactory factory = new DefaultDataSourceFactory(
                 this,
                 Util.getUserAgent(this, getString(R.string.app_name)));
         MediaSource source = new ProgressiveMediaSource.Factory(factory)
-                .createMediaSource(Uri.parse(videoUrl));
+                .createMediaSource(Uri.parse(mVideoUrl));
 
+        mPlayer.prepare(source, !hasPosition, false);
+    }
 
-        if (savedInstanceState != null) {
-            mPlayer.setPlayWhenReady(savedInstanceState.getBoolean(OUT_STATE_PLAYING, true));
-            mPlayer.seekTo(savedInstanceState.getLong(OUT_STATE_CURRENT_POSITION, 0));
-            mPlayer.prepare(source, false, false);
-        } else {
-            mPlayer.setPlayWhenReady(true);
-            mPlayer.prepare(source);
+    private void releasePlayer() {
+        if (mPlayer != null) {
+            mSavedPosition = mPlayer.getCurrentPosition();
+            mSavedPlayingState = mPlayer.getPlayWhenReady();
+            mPlayer.release();
+            mPlayer = null;
         }
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            initializePlayer();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Util.SDK_INT <= 23 && mPlayer == null) {
+            initializePlayer();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mPlayer.setPlayWhenReady(false);
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
     }
 
-    private static final String OUT_STATE_PLAYING = "playing";
-    private static final String OUT_STATE_CURRENT_POSITION = "position";
-
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(OUT_STATE_PLAYING, mPlayer.getPlayWhenReady());
-        outState.putLong(OUT_STATE_CURRENT_POSITION, mPlayer.getCurrentPosition());
+    protected void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mPlayer.release();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(OUT_STATE_PLAYING, mPlayer.getPlayWhenReady());
+        outState.putLong(OUT_STATE_CURRENT_POSITION, mPlayer.getCurrentPosition());
     }
 }
